@@ -41,8 +41,7 @@ def draw(filePath: str):
 
         pattern = r"(LT;|SP\d+;)(.*?)(LT;|SP\d+;$)" 
         objects = findall(pattern, hpgl, DOTALL)
-        
-        total = 0
+
         for obj in objects:
             c = obj[1]
             x_ = []
@@ -51,16 +50,12 @@ def draw(filePath: str):
             code_pattern = r'(PU|PD)(-?\d+)\s(-?\d+)'
             points = findall(code_pattern, c)
 
-            length = 0
-            prev_x, prev_y = map(int, points[0][1:])
             for i in range(len(points)):
-                command, x, y = points[i]
+                _, x, y = points[i]
                 x, y = map(int, (x, y))
                 x_.append(x)
                 y_.append(y)
             plt.plot(x_, y_)
-
-
     plt.show()
 
 print(getLength(path.name, 0.04))
