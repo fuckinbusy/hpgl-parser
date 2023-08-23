@@ -4,12 +4,11 @@ from tkinter import filedialog as fd
 import matplotlib.pyplot as plt
 
 path = fd.askopenfile(filetypes=[("HPGL", "*.plt")])
+pattern = r"(LT;|SP\d+;)(.*?)(LT;|SP\d+;$)" 
 
 def getLength(filePath: str, pointsPerMm: int) -> int:
     with open(filePath, 'rb') as file:
         hpgl = file.read().decode('utf-8')
-
-        pattern = r"(LT;|SP\d+;)(.*?)(LT;|SP\d+;$)" 
         objects = findall(pattern, hpgl, DOTALL)
 
         total = 0
@@ -38,8 +37,6 @@ def getLength(filePath: str, pointsPerMm: int) -> int:
 def draw(filePath: str):
     with open(filePath, 'rb') as file:
         hpgl = file.read().decode('utf-8')
-
-        pattern = r"(LT;|SP\d+;)(.*?)(LT;|SP\d+;$)" 
         objects = findall(pattern, hpgl, DOTALL)
 
         for obj in objects:
