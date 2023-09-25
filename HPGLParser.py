@@ -1,6 +1,8 @@
 from re import findall, DOTALL
 from math import hypot
 from tkinter import filedialog as fd
+from typing import Literal
+
 import matplotlib.pyplot as plt
 from matplotlib.animation import FFMpegWriter, PillowWriter
 
@@ -64,7 +66,12 @@ def draw(file_path: str):
     plt.show()
 
 
-def visualization_mp4(file_path: str, fps: int = 15, dpi: int = 100, output_name: str = "visual"):
+def visualization(file_path: str, extension: Literal["mp4", "gif"],
+                  fps: int = 15, dpi: int = 100, output_name: str = "visual"):
+    """ extension parameter can only be mp4 or gif """
+    if extension != "gif" and extension != "mp4" or extension is None:
+        print("Extension parameter can only be 'mp4' or 'gif'")
+        return
     plt.clf()
     l, = plt.plot([], [], 'k-')
     plt.autoscale()
@@ -73,42 +80,15 @@ def visualization_mp4(file_path: str, fps: int = 15, dpi: int = 100, output_name
     fig = plt.gcf()
     with open(file_path, 'rb') as file:
         metadata = dict(title='Vector objects visualization | by richard')
-        writer = FFMpegWriter(fps=fps, metadata=metadata)
-
+        writer = PillowWriter(fps=fps, metadata=metadata) if extension == "gif" else FFMpegWriter(fps=fps, metadata=metadata)
         hpgl = file.read().decode('utf-8')
         objects = findall(patterns['LT_SP'], hpgl, DOTALL)
         objects_total = len(objects)
         objects_list = __create_list_of_objects(objects)
 
-        with writer.saving(fig, output_name + ".mp4", dpi):
+        with writer.saving(fig, output_name + f".{extension}", dpi):
             for num, obj in enumerate(objects_list):
-                print(f"[MP4] Drawing {num + 1}/{objects_total}")
-                x = objects_list[obj]['x']
-                y = objects_list[obj]['y']
-                plt.plot(x, y, '-b')
-                l.set_data(x, y)
-                writer.grab_frame()
-
-
-def visualization_gif(file_path: str, fps: int = 15, dpi: int = 100, output_name: str = "visual"):
-    plt.clf()
-    l, = plt.plot([], [], 'k-')
-    plt.autoscale()
-    plt.axis('off')
-    plt.gca().set_aspect('equal')
-    fig = plt.gcf()
-    with open(file_path, 'rb') as file:
-        metadata = dict(title='Vector objects visualization | by richard')
-        writer = PillowWriter(fps=fps, metadata=metadata)
-
-        hpgl = file.read().decode('utf-8')
-        objects = findall(patterns['LT_SP'], hpgl, DOTALL)
-        objects_total = len(objects)
-        objects_list = __create_list_of_objects(objects)
-
-        with writer.saving(fig, output_name + ".gif", dpi):
-            for num, obj in enumerate(objects_list):
-                print(f"[GIF] Drawing {num + 1}/{objects_total}")
+                print(f"[VISUAL] Drawing {num + 1}/{objects_total}")
                 x = objects_list[obj]['x']
                 y = objects_list[obj]['y']
                 plt.plot(x, y, '-b')
@@ -138,5 +118,5 @@ def __create_list_of_objects(list_of_objects) -> dict:
 print(get_length(path.name, 0.04))
 
 draw(path.name)
-visualization_gif(path.name)
-visualization_mp4(path.name)
+visualization(path.name, extension='gif')
+visualization(path.name, extension='mp4')
