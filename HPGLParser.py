@@ -110,7 +110,6 @@ def __create_list_of_objects(list_of_objects) -> dict:
             y_.append(y)
 
         objects[f'object_{num}'] = dict(x=x_, y=y_)
-    print(objects)
     return objects
 
 
