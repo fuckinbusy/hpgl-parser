@@ -1,4 +1,4 @@
-# hpgl-parser
+# hpgl code parser
 Parse HPGL code from Corel Draw .plt files.
 
 functions:
